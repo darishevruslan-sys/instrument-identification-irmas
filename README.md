@@ -1,5 +1,9 @@
 # Идентификация музыкальных инструментов в полифоническом аудио
 
+[![CI](https://github.com/darishevruslan-sys/instrument-identification-irmas/actions/workflows/ci.yml/badge.svg)](https://github.com/darishevruslan-sys/instrument-identification-irmas/actions/workflows/ci.yml)
+
+**Рабочее upload-only демо:** [Hugging Face Space](https://huggingface.co/spaces/lodosmor/vkrs_space)
+
 Исследовательско-инженерный baseline выпускной квалификационной работы Руслана Даришева. Система преобразует аудио в log Mel-спектрограммы и решает multi-label задачу компактной CNN. В репозитории есть обучение, воспроизводимая оценка, два исследовательских checkpoint, FastAPI-демо и Docker-конфигурация.
 
 > Это завершённый baseline, а не новая архитектура, SOTA-сравнение или доказанный коммерческий продукт. Сценарий автоматического тегирования для музыкального поиска и рекомендаций рассматривается как продуктовая гипотеза.
