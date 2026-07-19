@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Идентификация музыкальных инструментов · IRMAS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css?v=steps-detail-2">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="app">
+        <!-- ===== Header ===== -->
+        <header class="hero">
+            <div class="hero-badge">
+                <span class="dot"></span>
+                <span id="model-status-pill">Проверка модели…</span>
+            </div>
+            <h1 class="hero-title">Идентификация музыкальных инструментов</h1>
+            <p class="hero-subtitle">
+                Нейросетевая модель на основе спектрального анализа определяет инструменты в полифонических
+                аудиозаписях. Загрузите фрагмент — и увидите, что происходит «под капотом»: от спектрограммы
+                до вероятностей по 11 классам IRMAS.
+            </p>
+            <div class="hero-meta" id="hero-meta">
+                <span class="chip">CNN</span>
+                <span class="chip">Mel-spectrogram</span>
+                <span class="chip">Multi-label</span>
+                <span class="chip">IRMAS · 11 классов</span>
+            </div>
+        </header>
+
+        <!-- ===== Upload ===== -->
+        <section class="card" id="upload-card">
+            <div class="card-head">
+                <h2>1 · Загрузка аудио</h2>
+                <span class="card-hint">.wav · .mp3 · .flac · макс. 40 МБ</span>
+            </div>
+
+            <div id="dropzone" class="dropzone">
+                <svg class="dropzone-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <p class="dropzone-title">Перетащите аудиофайл сюда</p>
+                <p class="dropzone-sub">или нажмите для выбора файла</p>
+                <input type="file" id="file-input" accept=".wav,.mp3,.flac,.ogg,.m4a,.aiff,.aif" hidden>
+            </div>
+
+            <div id="upload-error" class="alert alert-error hidden"></div>
+
+            <div class="mode-row">
+                <span class="mode-label">Режим анализа:</span>
+                <div class="tabs" role="tablist" id="mode-tabs">
+                    <button class="tab active" data-mode="quick">Первые 3 секунды</button>
+                    <button class="tab" data-mode="full">Вся песня (sliding window)</button>
+                </div>
+            </div>
+
+            <div id="full-options" class="full-options hidden">
+                <label class="full-opt">
+                    <span>Шаг окна:</span>
+                    <select id="hop-duration">
+                        <option value="0.5">0.5 с (точнее, медленнее)</option>
+                        <option value="1.0">1.0 с</option>
+                        <option value="1.5" selected>1.5 с</option>
+                        <option value="2.5">2.5 с</option>
+                    </select>
+                </label>
+            </div>
+
+            <div id="progress-wrap" class="progress-wrap hidden">
+                <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+                <span class="progress-text" id="progress-text">Анализ…</span>
+            </div>
+        </section>
+
+        <!-- ===== Audio info + player ===== -->
+        <section class="card hidden" id="audio-card">
+            <div class="card-head">
+                <h2>2 · Аудиофрагмент</h2>
+                <span class="card-hint" id="audio-crop-hint"></span>
+            </div>
+            <div class="audio-grid">
+                <div class="audio-player">
+                    <audio id="audio-player" controls></audio>
+                    <p class="audio-name" id="audio-name"></p>
+                </div>
+                <div class="meta-grid" id="meta-grid"></div>
+            </div>
+        </section>
+
+        <!-- ===== Feature visualization ===== -->
+        <section class="card hidden" id="feature-card">
+            <div class="card-head">
+                <h2>3 · Спектральное представление</h2>
+                <div class="tabs" role="tablist">
+                    <button class="tab active" data-feature="mel">Mel-spectrogram</button>
+                    <button class="tab" data-feature="mfcc">MFCC</button>
+                    <button class="tab" data-feature="waveform">Waveform</button>
+                </div>
+            </div>
+            <div id="feature-image-wrap" class="feature-image-wrap">
+                <div class="skeleton" id="feature-skeleton">Строим визуализацию…</div>
+                <img id="feature-image" alt="Визуализация признаков" class="hidden">
+            </div>
+            <p class="feature-caption" id="feature-caption"></p>
+        </section>
+
+        <!-- ===== Results ===== -->
+        <section class="card hidden" id="results-card">
+            <div class="card-head">
+                <h2>4 · Предсказание инструментов</h2>
+                <div class="threshold-wrap">
+                    <label for="threshold">Threshold: <span id="threshold-val">0.50</span></label>
+                    <input type="range" id="threshold" min="0" max="1" step="0.01" value="0.5">
+                </div>
+            </div>
+
+            <div id="results-top" class="results-top"></div>
+
+            <div class="chart-wrap">
+                <canvas id="prob-chart" height="160"></canvas>
+            </div>
+
+            <h3 class="subsection-title">Все классы</h3>
+            <div class="instrument-table" id="instrument-table"></div>
+        </section>
+
+        <!-- ===== Pipeline ===== -->
+        <section class="card hidden" id="pipeline-card">
+            <div class="card-head">
+                <h2>5 · Как это работает</h2>
+                <div class="pipeline-actions">
+                    <span class="card-hint">нажмите «Подробнее» в нужном шаге</span>
+                </div>
+            </div>
+            <div class="pipeline" id="pipeline-list"></div>
+        </section>
+
+        <footer class="footer">
+            <p>Демонстрационный UI для дипломной работы · IRMAS · PyTorch · Librosa</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js?v=steps-detail-2"></script>
+</body>
+</html>

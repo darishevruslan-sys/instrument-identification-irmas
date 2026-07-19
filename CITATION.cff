@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Neural identification of musical instruments in polyphonic audio"
+type: software
+authors:
+  - family-names: Darishev
+    given-names: Ruslan
+year: 2026
+license: MIT
+repository-code: "https://github.com/darishevruslan-sys/instrument-identification-irmas"

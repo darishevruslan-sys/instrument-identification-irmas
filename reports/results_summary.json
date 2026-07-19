@@ -1,0 +1,42 @@
+{
+  "generated_from_defended_thesis_artifacts": true,
+  "new_training_for_submission": false,
+  "seed": 42,
+  "experiments": [
+    {
+      "id": "irmas_validation_diagnostic",
+      "model": "best_model_mel_v2.pth",
+      "report_split": "IRMAS validation",
+      "threshold_selection_split": "same IRMAS validation",
+      "independent_test": false,
+      "micro_f1": 0.5895765472312704,
+      "macro_f1": 0.5942877694213031,
+      "precision": 0.523423944476576,
+      "recall": 0.6748695003728561
+    },
+    {
+      "id": "irmas_only_openmic_test",
+      "model": "best_model_mel_v2.pth",
+      "report_split": "OpenMIC split01_test overlap-9",
+      "threshold_selection_split": "OpenMIC split01_train",
+      "independent_test": true,
+      "y_mask_used": true,
+      "micro_f1": 0.6541850220264317,
+      "macro_f1": 0.6442840069152891,
+      "precision": 0.5461231995096537,
+      "recall": 0.8155606407322654
+    },
+    {
+      "id": "openmic_finetuned_test",
+      "model": "best_model_mel_v2_openmic_overlap9.pth",
+      "report_split": "OpenMIC split01_test overlap-9",
+      "threshold_selection_split": "20% holdout from OpenMIC split01_train",
+      "independent_test": true,
+      "y_mask_used": true,
+      "micro_f1": 0.6929307805596465,
+      "macro_f1": 0.6876966711488328,
+      "precision": 0.5796119494918386,
+      "recall": 0.8613272311212815
+    }
+  ]
+}

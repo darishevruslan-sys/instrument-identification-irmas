@@ -1,0 +1,56 @@
+# Local datasets and audio. Do not commit IRMAS/OpenMIC or demo tracks.
+data/
+assets/music/
+*.mp3
+*.wav
+*.flac
+*.ogg
+*.m4a
+*.aiff
+*.aif
+
+# Python and local tooling.
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.env
+.codex-run/
+
+# Experiment outputs. Only the two documented research checkpoints are public.
+outputs/*
+!outputs/models/
+outputs/models/*
+!outputs/models/best_model_mel_v2.pth
+!outputs/models/best_model_mel_v2_openmic_overlap9.pth
+
+# Private thesis/application material and local working copies.
+work/
+done/
+echo/
+humanizer-ru/
+hf-space-upload/
+submission/
+space-release/
+/scripts/
+/appendices.md
+/conclusion.md
+/defense_cheatsheet.md
+/literature_sources.md
+/practical_part.md
+/presentation_defense_text.md
+/style_notes.md
+/TODO.md
+*.docx
+*.pptx
+*.pdf
+*.bak
+
+# OS/editor files.
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
