@@ -1,2 +1,4 @@
 -r requirements-deploy.txt
 httpx==0.28.1
+pandas==3.0.3
+tqdm==4.68.1
